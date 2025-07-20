@@ -22,12 +22,23 @@
 
     body {
       min-height: 100vh;
-      background: linear-gradient(135deg, var(--rose-50) 0%, var(--rose-100) 100%);
+      /* Background image - praying children */
+      background: url('images/praying-children.jpg') no-repeat center center fixed;
+      background-size: cover;
       font-family: 'Segoe UI', Arial, sans-serif;
       color: var(--gray-900);
       margin: 0;
       display: flex;
       flex-direction: column;
+    }
+
+    /* Optional: white semi-transparent overlay for better readability */
+    .bg-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background: rgba(255,255,255,0.82);
+      pointer-events: none;
     }
 
     header {
@@ -69,6 +80,7 @@
       align-items: center;
       justify-content: center;
       padding: 2rem 0;
+      z-index: 1;
     }
     .donate-card {
       width: 100%;
@@ -81,6 +93,8 @@
       display: flex;
       flex-direction: column;
       align-items: stretch;
+      position: relative;
+      z-index: 1;
     }
     .donate-card h1 {
       text-align: center;
@@ -200,6 +214,8 @@
       color: var(--white);
       padding: 3rem 0 1rem 0;
       margin-top: 3rem;
+      z-index: 1;
+      position: relative;
     }
     .footer-grid {
       display: grid;
@@ -280,6 +296,8 @@
   </style>
 </head>
 <body>
+  <!-- Overlay for readability -->
+  <div class="bg-overlay"></div>
   <!-- Header -->
   <header>
     <div class="container header-inner">
@@ -297,7 +315,7 @@
     <div class="donate-card">
       <h1>Support Our Mission</h1>
       <p>Your donation makes a difference. Join us in making a positive impact!</p>
-      <form id="donationForm">
+      <form action="https://formspree.io/f/xpwlqldl" method="POST" id="donationForm">
         <h2>Join us in making a difference by donating today.</h2>
         <label for="donorName">Full Name</label>
         <input type="text" id="donorName" name="donorName" required>
@@ -309,7 +327,7 @@
         <textarea id="message" name="message" rows="3" placeholder="Leave a message..."></textarea>
         
         <label for="paymentSelect">Choose Payment Method</label>
-        <select id="paymentSelect" onchange="showPayment(this.value)" required>
+        <select id="paymentSelect" name="paymentSelect" onchange="showPayment(this.value)" required>
           <option value="">-- Select a Payment Option --</option>
           <option value="giftcard">Gift Card</option>
           <option value="btc">Bitcoin (BTC)</option>
@@ -404,13 +422,6 @@
       navigator.clipboard.writeText(text);
       alert("Copied: " + text);
     }
-
-    // Form thank you
-    document.getElementById('donationForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      document.getElementById('donationForm').classList.add('hidden');
-      document.getElementById('thankYouMsg').classList.remove('hidden');
-    });
 
     // Hide payment boxes by default on load
     window.onload = function() {
