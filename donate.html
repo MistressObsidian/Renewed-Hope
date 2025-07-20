@@ -39,6 +39,33 @@
       pointer-events: none;
     }
 
+    /* Go Back Button Styles */
+    .go-back-btn {
+      position: fixed;
+      top: 22px;
+      left: 20px;
+      z-index: 10001;
+      background: var(--rose-600);
+      color: #fff;
+      text-decoration: none;
+      font-size: 1.05rem;
+      padding: 8px 18px 8px 14px;
+      border-radius: 24px;
+      box-shadow: 0 2px 12px #be123c1b;
+      font-weight: 500;
+      transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+      display: inline-block;
+      letter-spacing: 0.02em;
+    }
+    .go-back-btn:hover {
+      background: var(--rose-700);
+      color: #fff;
+      box-shadow: 0 4px 20px #be123c33;
+    }
+    @media (max-width:540px){
+      .go-back-btn { top: 8px; left: 5px; font-size: 0.97rem; padding: 7px 14px 7px 11px;}
+    }
+
     header {
       background: var(--white);
       border-bottom: 1px solid var(--gray-100);
@@ -330,6 +357,10 @@
   </style>
 </head>
 <body>
+  <!-- Go Back Button -->
+  <a href="javascript:window.history.back()" class="go-back-btn" title="Go Back">
+    &#8592; Go Back
+  </a>
   <!-- Overlay for readability -->
   <div class="bg-overlay"></div>
   <!-- Confirmation Loader -->
