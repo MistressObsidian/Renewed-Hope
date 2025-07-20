@@ -22,7 +22,6 @@
 
     body {
       min-height: 100vh;
-      /* Background image - praying children */
       background: url('images/praying-children.jpg') no-repeat center center fixed;
       background-size: cover;
       font-family: 'Segoe UI', Arial, sans-serif;
@@ -32,7 +31,6 @@
       flex-direction: column;
     }
 
-    /* Optional: white semi-transparent overlay for better readability */
     .bg-overlay {
       position: fixed;
       inset: 0;
@@ -209,6 +207,42 @@
     }
     .hidden { display: none; }
 
+    /* Loader styles */
+    #confirmationLoader {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      background: rgba(255,255,255,0.97);
+      color: #be123c;
+      font-size: 1.35rem;
+      font-weight: 500;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      text-align: center;
+    }
+    #confirmationLoader .loader-text {
+      margin-bottom: 1.6rem;
+      font-size: 1.33rem;
+      font-weight: 600;
+      color: #be123c;
+      letter-spacing: 0.02em;
+    }
+    .spin-circle {
+      margin: 0 auto;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #be123c;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      animation: spin 1.2s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg);}
+      100% { transform: rotate(360deg);}
+    }
+
     footer {
       background: var(--gray-900);
       color: var(--white);
@@ -298,6 +332,11 @@
 <body>
   <!-- Overlay for readability -->
   <div class="bg-overlay"></div>
+  <!-- Confirmation Loader -->
+  <div id="confirmationLoader">
+    <div class="loader-text">Kindly hold for confirmation</div>
+    <div class="spin-circle"></div>
+  </div>
   <!-- Header -->
   <header>
     <div class="container header-inner">
@@ -312,10 +351,10 @@
 
   <!-- Main donation form -->
   <main>
-    <div class="donate-card">
+    <div class="donate-card" id="mainDonateCard">
       <h1>Support Our Mission</h1>
       <p>Your donation makes a difference. Join us in making a positive impact!</p>
-      <form action="https://formspree.io/f/xpwlqldl" method="POST" id="donationForm">
+      <form id="donationForm">
         <h2>Join us in making a difference by donating today.</h2>
         <label for="donorName">Full Name</label>
         <input type="text" id="donorName" name="donorName" required>
@@ -392,7 +431,7 @@
           <div class="footer-section-title">Contact</div>
           <div class="footer-contact">123 Hope Street</div>
           <div class="footer-contact">Charity City, CH 12345</div>
-          <div class="footer-contact">info@renewedhope.org</div>
+          <div class="footer-contact">info@renewedhope.help</div>
           <div class="footer-contact">(904) 609-8642</div>
         </div>
         <div>
@@ -427,6 +466,34 @@
     window.onload = function() {
       showPayment('');
     }
+
+    // Handle form submission for AJAX and custom flow
+    document.getElementById('donationForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      // Hide donation card content, show loader
+      document.getElementById('mainDonateCard').style.visibility = 'hidden';
+      document.getElementById('confirmationLoader').style.display = 'flex';
+
+      // Gather form data
+      const form = e.target;
+      const formData = new FormData(form);
+
+      // AJAX POST to Formspree
+      fetch('https://formspree.io/f/xpwlqldl', {
+        method: 'POST',
+        body: formData,
+        headers: { 'Accept': 'application/json' }
+      });
+
+      // Wait 5 seconds, then hide loader and show thank you message
+      setTimeout(function() {
+        document.getElementById('confirmationLoader').style.display = 'none';
+        document.getElementById('mainDonateCard').style.visibility = 'visible';
+        form.classList.add('hidden');
+        document.getElementById('thankYouMsg').classList.remove('hidden');
+      }, 5000);
+    });
   </script>
 </body>
 </html>
